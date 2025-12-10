@@ -2,14 +2,14 @@ package org.example.hexlet;
 
 import io.javalin.Javalin;
 
+
 public class HelloWorld {
     public static void main(String[] args) {
-        // Создаем приложение
-        var app = Javalin.create(config -> {
-            config.bundledPlugins.enableDevLogging();
+        var app = Javalin.create(config -> config.bundledPlugins.enableDevLogging());
+        app.get("/hello", ctx -> {
+            var name = ctx.queryParamAsClass("name", String.class).getOrDefault("World");
+            ctx.result("Hello, " + name + "!");
         });
-        // Описываем, что загрузится по адресу /
-        app.get("/", ctx -> ctx.result("Hello World"));
-        app.start(7070); // Стартуем веб-сервер
+        app.start(7070);
     }
 }
