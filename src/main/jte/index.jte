@@ -1,13 +1,13 @@
-
+@import org.example.hexlet.util.NamedRoutes
 
 @template.layout.page(
 content = @`
   <div>
-    <a href="/users">Пользователи</a>
+    <a href="${NamedRoutes.usersPath()}">Пользователи</a>
   </div>
 
   <div>
-    <a href="/courses">Курсы</a>
+    <a href="${NamedRoutes.coursesPath()}">Курсы</a>
   </div>
 
 `

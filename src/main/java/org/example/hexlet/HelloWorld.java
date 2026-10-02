@@ -18,6 +18,7 @@ import org.example.hexlet.model.Course;
 import org.example.hexlet.model.User;
 import org.example.hexlet.repository.CourseRepository;
 import org.example.hexlet.repository.UserRepository;
+import org.example.hexlet.util.NamedRoutes;
 
 import java.nio.file.Path;
 import java.util.Locale;
@@ -29,7 +30,7 @@ public class HelloWorld {
 // Создаем приложение
         var app = Javalin.create(config -> {
             config.fileRenderer(new JavalinJte(createTemplateEngine()));
-            config.routes.get("/courses", ctx -> {
+            config.routes.get(NamedRoutes.coursesPath(), ctx -> {
                 List<Course> courses = CourseRepository.getEntities();
                 var term = ctx.queryParam("term");
                 List<Course> listForRender;
@@ -55,13 +56,13 @@ public class HelloWorld {
                 ctx.render("courses/index.jte", Map.of("page", page));
             });
 
-            config.routes.get("/courses/build", ctx ->
+            config.routes.get(NamedRoutes.buildCoursePath(), ctx ->
             {
                 var page = new BuildCoursePage();
                 ctx.render("courses/build.jte", Map.of("page", page));
             });
 
-            config.routes.get("/courses/{id}", ctx -> {
+            config.routes.get(NamedRoutes.coursePath("{id}"), ctx -> {
                 List<Course> courses = CourseRepository.getEntities();
                 var id = ctx.pathParamAsClass("id", Long.class).get();
                 Course result = courses.stream()
@@ -80,7 +81,7 @@ public class HelloWorld {
 
             });
 
-            config.routes.post("/courses", ctx -> {
+            config.routes.post(NamedRoutes.coursesPath(), ctx -> {
                 var name = ctx.formParam("name");
                 var description = ctx.formParam("description");
                 try {
@@ -92,7 +93,7 @@ public class HelloWorld {
                             .get();
                     var course = new Course(checkedName, checkedDescription);
                     CourseRepository.save(course);
-                    ctx.redirect("/courses");
+                    ctx.redirect(NamedRoutes.coursesPath());
                 } catch (ValidationException e) {
                     var page = new BuildCoursePage(name, description, e.getErrors());
                     ctx.status(422);
@@ -103,12 +104,12 @@ public class HelloWorld {
             });
 
 
-            config.routes.get("/users/build", ctx -> {
+            config.routes.get(NamedRoutes.buildUserPath(), ctx -> {
                 var page = new BuildUserPage();
                 ctx.render("users/build.jte", Map.of("page", page));
             });
 
-            config.routes.post("/users", ctx -> {
+            config.routes.post(NamedRoutes.usersPath(), ctx -> {
                 var name = ctx.formParam("name");
                 var email = ctx.formParam("email");
 
@@ -120,7 +121,7 @@ public class HelloWorld {
                             .get();
                     var user = new User(name, email, password);
                     UserRepository.save(user);
-                    ctx.redirect("/users");
+                    ctx.redirect(NamedRoutes.usersPath());
                 } catch (ValidationException e) {
                     var page = new BuildUserPage(name, email, e.getErrors());
                     ctx.status(422);
@@ -128,13 +129,13 @@ public class HelloWorld {
                 }
             });
 
-            config.routes.get("/users", ctx -> {
+            config.routes.get(NamedRoutes.usersPath(), ctx -> {
                 List<User> users = UserRepository.getEntities();
                 var page = new UsersPage(users);
                 ctx.render("users/index.jte", Map.of("page", page));
             });
 
-            config.routes.get("/", ctx -> ctx.render("index.jte"));
+            config.routes.get(NamedRoutes.rootPath(), ctx -> ctx.render("index.jte"));
 
         });
         app.start(7070); // Стартуем веб-сервер

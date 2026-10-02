@@ -1,5 +1,5 @@
-@import org.example.hexlet.dto.courses.CoursesPage
 @import org.example.hexlet.dto.users.UsersPage
+@import org.example.hexlet.util.NamedRoutes
 @param UsersPage page
 
 @template.layout.page(
@@ -16,6 +16,6 @@ content = @`
             </div>
         @endfor
     @endif
-    <button onclick="window.location.href='/users/build'">Добавить пользователя</button>
+    <button onclick="window.location.href='${NamedRoutes.buildUserPath()}'">Добавить пользователя</button>
 `
 )
