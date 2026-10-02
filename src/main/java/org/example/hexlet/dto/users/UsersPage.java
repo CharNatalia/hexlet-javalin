@@ -1,4 +1,4 @@
-package org.example.hexlet.dto.courses;
+package org.example.hexlet.dto.users;
 
 import java.util.List;
 

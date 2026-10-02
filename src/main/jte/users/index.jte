@@ -1,5 +1,5 @@
 @import org.example.hexlet.dto.courses.CoursesPage
-@import org.example.hexlet.dto.courses.UsersPage
+@import org.example.hexlet.dto.users.UsersPage
 @param UsersPage page
 
 @template.layout.page(

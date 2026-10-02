@@ -8,9 +8,12 @@ import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.DirectoryCodeResolver;
 import io.javalin.rendering.template.JavalinJte;
+import io.javalin.validation.ValidationException;
+import org.example.hexlet.dto.courses.BuildCoursePage;
 import org.example.hexlet.dto.courses.CoursePage;
 import org.example.hexlet.dto.courses.CoursesPage;
-import org.example.hexlet.dto.courses.UsersPage;
+import org.example.hexlet.dto.users.BuildUserPage;
+import org.example.hexlet.dto.users.UsersPage;
 import org.example.hexlet.model.Course;
 import org.example.hexlet.model.User;
 import org.example.hexlet.repository.CourseRepository;
@@ -54,7 +57,8 @@ public class HelloWorld {
 
             config.routes.get("/courses/build", ctx ->
             {
-                ctx.render("courses/build.jte");
+                var page = new BuildCoursePage();
+                ctx.render("courses/build.jte", Map.of("page", page));
             });
 
             config.routes.get("/courses/{id}", ctx -> {
@@ -77,28 +81,51 @@ public class HelloWorld {
             });
 
             config.routes.post("/courses", ctx -> {
-                var name = ctx.formParam("name").trim();
-                var description = ctx.formParam("description").trim();
+                var name = ctx.formParam("name");
+                var description = ctx.formParam("description");
+                try {
+                    var checkedName = ctx.formParamAsClass("name", String.class)
+                            .check(value -> value.length() > 2, "Название курса слишком короткое")
+                            .get();
+                    var checkedDescription = ctx.formParamAsClass("description", String.class)
+                            .check(value -> value.length() > 10, "Описание курса слишком короткое")
+                            .get();
+                    var course = new Course(checkedName, checkedDescription);
+                    CourseRepository.save(course);
+                    ctx.redirect("/courses");
+                } catch (ValidationException e) {
+                    var page = new BuildCoursePage(name, description, e.getErrors());
+                    ctx.status(422);
+                    ctx.render("courses/build.jte", Map.of("page", page));
+                }
 
-                var course = new Course(name, description);
-                CourseRepository.save(course);
-                ctx.redirect("/courses");
+
             });
 
 
             config.routes.get("/users/build", ctx -> {
-                ctx.render("users/build.jte");
+                var page = new BuildUserPage();
+                ctx.render("users/build.jte", Map.of("page", page));
             });
 
             config.routes.post("/users", ctx -> {
-                var name = ctx.formParam("name").trim();
-                var email = ctx.formParam("email").trim().toLowerCase();
-                var password = ctx.formParam("password");
-                var passwordConfirmation = ctx.formParam("passwordConfirmation");
+                var name = ctx.formParam("name");
+                var email = ctx.formParam("email");
 
-                var user = new User(name, email, password);
-                UserRepository.save(user);
-                ctx.redirect("/users");
+                try {
+                    var passwordConfirmation = ctx.formParam("passwordConfirmation");
+                    var password = ctx.formParamAsClass("password", String.class)
+                            .check(value -> value.equals(passwordConfirmation), "Пароли не совпадают")
+                            .check(value -> value.length() > 6, "У пароля недостаточная длина")
+                            .get();
+                    var user = new User(name, email, password);
+                    UserRepository.save(user);
+                    ctx.redirect("/users");
+                } catch (ValidationException e) {
+                    var page = new BuildUserPage(name, email, e.getErrors());
+                    ctx.status(422);
+                    ctx.render("users/build.jte", Map.of("page", page));
+                }
             });
 
             config.routes.get("/users", ctx -> {
