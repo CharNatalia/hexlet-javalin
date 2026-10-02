@@ -8,8 +8,9 @@ import lombok.ToString;
 @Setter
 @ToString
 public final class Course {
-    private Long id;
+    private static Long idNumber = 0L;
 
+    private Long id;
     @ToString.Include
     private String name;
     private String description;
@@ -17,5 +18,12 @@ public final class Course {
     public Course(String name, String description) {
         this.name = name;
         this.description = description;
+        this.id = getIdNumber();
+    }
+
+    public static Long getIdNumber() {
+        idNumber++;
+        return idNumber;
     }
 }
+

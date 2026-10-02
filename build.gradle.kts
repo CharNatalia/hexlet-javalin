@@ -21,14 +21,15 @@ dependencies {
     // Версии зависимостей могут отличаться
     // Здесь мы сразу подключаем зависимости,
     // которые понадобятся во время обучения
-    implementation("io.javalin:javalin:6.1.3")
+    implementation("io.javalin:javalin:7.2.3")
     implementation("org.slf4j:slf4j-simple:2.0.7")
-    implementation("io.javalin:javalin-rendering:6.1.3")
-    implementation("gg.jte:jte:3.1.9")
-    testImplementation(platform("org.junit:junit-bom:5.9.1"))
+    implementation("io.javalin:javalin-rendering-jte:7.2.3")
+    implementation("gg.jte:jte:3.2.4")
+    testImplementation(platform("org.junit:junit-bom:6.1.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     compileOnly("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.22.1")
 }
 
 tasks.test {
