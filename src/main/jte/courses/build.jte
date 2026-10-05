@@ -19,6 +19,7 @@ content = @`
             <label>
                 Название
                 <input type="text" name="name" value="${page.getName()}" />
+
             </label>
         </div>
         <div>
