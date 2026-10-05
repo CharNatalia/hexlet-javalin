@@ -37,4 +37,14 @@ public class NamedRoutes {
     public static String rootPath() {
         return "/";
     }
+
+    //сессии
+
+    public static String sessionsPath() {
+        return "/sessions";
+    }
+
+    public static String buildSessionsPath() {
+        return "/sessions/build";
+    }
 }
